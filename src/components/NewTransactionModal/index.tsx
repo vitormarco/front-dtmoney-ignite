@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 import Modal from 'react-modal'
 
 import closeImg from '../../assets/close.svg'
 import incomeImg from '../../assets/income.svg'
 import outcomeImg from '../../assets/outcome.svg'
+import { createNewTransaction } from '../../service/Transactions'
 
 import { Container, TransactionTypeContainer, Radiobox } from './styles'
 
@@ -12,8 +13,26 @@ type NewTransactionModalProps = {
   onRequestClose: () => void;
 }
 
+type types = 'deposit' | 'withdraw'
+
 export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionModalProps) {
-  const [type, setType] = useState('deposit');
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('');
+  const [value, setValue] = useState(0)
+  const [type, setType] = useState<types>('deposit');
+
+  async function handleCreateNewTransaction(event: FormEvent) {
+    event.preventDefault();
+
+    const result = await createNewTransaction({
+      title,
+      category,
+      value,
+      type
+    });
+
+    console.log(result)
+  }
 
   return (
     <Modal
@@ -29,7 +48,7 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
       >
         <img src={closeImg} alt="Close modal" />
       </button>
-      <Container>
+      <Container onSubmit={handleCreateNewTransaction}>
         <h2>Create new transaction</h2>
 
         <input 
@@ -37,12 +56,16 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
           name="title"
           id="title"
           placeholder='Title'
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
         />
         <input
           type="number"
           name="value"
           id="value"
           placeholder="Value"
+          value={value}
+          onChange={(event) => setValue(Number(event.target.value))}
         />
 
         <TransactionTypeContainer >
@@ -71,6 +94,8 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
           name="category"
           id="category"
           placeholder="Category"
+          value={category}
+          onChange={(event) => setCategory(event.target.value)}
         />
         <button type="submit">
           Create
