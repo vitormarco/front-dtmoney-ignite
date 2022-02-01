@@ -13,13 +13,13 @@ type NewTransactionModalProps = {
   onRequestClose: () => void;
 }
 
-type types = 'deposit' | 'withdraw'
+type Types = 'deposit' | 'withdraw'
 
 export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionModalProps) {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [value, setValue] = useState(0)
-  const [type, setType] = useState<types>('deposit');
+  const [type, setType] = useState<Types>('deposit');
 
   async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();

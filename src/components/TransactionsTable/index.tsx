@@ -1,12 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchAllTransaction } from "../../service/Transactions";
 import { Container } from "./styles";
 
+type TransactionsTypes = {
+  id: number;
+  title: string;
+  type: 'deposit' | 'withdraw';
+  category: string;
+  amout: number;
+  createdAt: string;
+}
+
 export function TransactionsTable() {
+  const [transactions, setTransactions] = useState<TransactionsTypes[]>([])
+
   useEffect(() => {
     async function getTransactions() {
-      const data = await fetchAllTransaction()
-      console.log(data)
+      const { transactions: allTrabsactions } = await fetchAllTransaction()
+      setTransactions(allTrabsactions)
     }
 
     getTransactions()
@@ -25,18 +36,25 @@ export function TransactionsTable() {
         </thead>
 
         <tbody>
-          <tr>
-            <td>Website development</td>
-            <td className="deposit">R$12000</td>
-            <td>Development</td>
-            <td>2022/01/01</td>
-          </tr>
-          <tr>
-            <td>Rent</td>
-            <td className="withdraw">-R$1200</td>
-            <td>House</td>
-            <td>2022/01/17</td>
-          </tr>
+          {transactions.map(transaction => (
+            <tr key={transaction.id}>
+              <td>{transaction.title}</td>
+              <td className={transaction.type}>
+                {transaction.type === 'withdraw' ? '- ' : ''}
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                  
+                }).format(transaction.amout)}
+              </td>
+              <td>{transaction.category}</td>
+              <td>
+                {new Intl.DateTimeFormat('pt-BR').format(
+                  new Date(transaction.createdAt)
+                )}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </Container>
