@@ -1,27 +1,9 @@
-import { useEffect, useState } from "react";
-import { fetchAllTransaction } from "../../service/Transactions";
+import { useContext } from "react";
+import { TransactionsContext } from "../../TransactionsContext";
 import { Container } from "./styles";
 
-type TransactionsTypes = {
-  id: number;
-  title: string;
-  type: 'deposit' | 'withdraw';
-  category: string;
-  amout: number;
-  createdAt: string;
-}
-
 export function TransactionsTable() {
-  const [transactions, setTransactions] = useState<TransactionsTypes[]>([])
-
-  useEffect(() => {
-    async function getTransactions() {
-      const { transactions: allTrabsactions } = await fetchAllTransaction()
-      setTransactions(allTrabsactions)
-    }
-
-    getTransactions()
-  }, [])
+  const transactions = useContext(TransactionsContext)
 
   return (
     <Container>
@@ -45,7 +27,7 @@ export function TransactionsTable() {
                   style: 'currency',
                   currency: 'BRL'
                   
-                }).format(transaction.amout)}
+                }).format(transaction.amount)}
               </td>
               <td>{transaction.category}</td>
               <td>
