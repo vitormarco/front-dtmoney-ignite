@@ -1,10 +1,10 @@
 import { FormEvent, useState } from 'react'
 import Modal from 'react-modal'
+import { useTransactions } from '../../hooks/useTransactions'
 
 import closeImg from '../../assets/close.svg'
 import incomeImg from '../../assets/income.svg'
 import outcomeImg from '../../assets/outcome.svg'
-import { createNewTransaction } from '../../service/Transactions'
 
 import { Container, TransactionTypeContainer, Radiobox } from './styles'
 
@@ -16,22 +16,32 @@ type NewTransactionModalProps = {
 type Types = 'deposit' | 'withdraw'
 
 export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionModalProps) {
+  const { createTransaction } = useTransactions();
+
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
-  const [value, setValue] = useState(0)
+  const [amount, setAmount] = useState(0)
   const [type, setType] = useState<Types>('deposit');
 
   async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();
-
-    const result = await createNewTransaction({
+    
+    await createTransaction({
       title,
+      amount,
       category,
-      value,
       type
     });
 
-    console.log(result)
+    resetValues()
+    onRequestClose();
+  }
+
+  function resetValues() {
+    setTitle('')
+    setCategory('')
+    setAmount(0)
+    setType('deposit')
   }
 
   return (
@@ -41,7 +51,7 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
       overlayClassName="react-modal-overlay"
       className="react-modal-content"
     >
-      <button 
+      <button
         type="button"
         onClick={onRequestClose}
         className="react-modal-close"
@@ -51,7 +61,7 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
       <Container onSubmit={handleCreateNewTransaction}>
         <h2>Create new transaction</h2>
 
-        <input 
+        <input
           type="text"
           name="title"
           id="title"
@@ -64,8 +74,8 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
           name="value"
           id="value"
           placeholder="Value"
-          value={value}
-          onChange={(event) => setValue(Number(event.target.value))}
+          value={amount}
+          onChange={(event) => setAmount(Number(event.target.value))}
         />
 
         <TransactionTypeContainer >
@@ -89,7 +99,7 @@ export function NewTransactionModal({ isOpen, onRequestClose }: NewTransactionMo
           </Radiobox>
         </TransactionTypeContainer>
 
-        <input 
+        <input
           type="text"
           name="category"
           id="category"

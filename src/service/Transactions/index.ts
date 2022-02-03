@@ -2,7 +2,7 @@ import { api } from "../api";
 
 type createNewTransactionData = {
   title: string;
-  value: number;
+  amount: number;
   category: string;
   type: 'deposit' | 'withdraw'
 }
